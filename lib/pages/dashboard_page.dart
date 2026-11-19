@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // Mengimpor model data, database helper, dan formulir produk
-import '../models/produk.dart';
 import '../helpers/database_helper.dart';
+import '../models/produk.dart';
 import 'form_produk_page.dart';
 
 // Halaman Beranda & Katalog Kasir SmartKasir
@@ -25,7 +25,6 @@ class _DashboardPageState extends State<DashboardPage> {
     'Minuman',
     'Snack',
     'Dessert',
-    'Lainnya',
   ];
 
   // Variabel penampung hasil asinkron basis data SQLite
@@ -151,7 +150,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: FontWeight.bold,
           color: warnaTeks,
         ),
@@ -215,7 +214,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: Colors.red.shade700,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -253,7 +252,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 Text(
                   _formatRupiah(item.hargaJual),
                   style: const TextStyle(
-                    color: Color(0xFF1E3A8A),
+                    color: Color(0xFF3A1C71), // Russian Violet
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                   ),
@@ -280,7 +279,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: const Icon(
                     Icons.edit_outlined,
                     size: 18,
-                    color: Color(0xFF1E3A8A),
+                    color: Color(0xFF3A1C71), // Russian Violet
                   ),
                   tooltip: 'Edit Produk',
                   padding: const EdgeInsets.all(4),
@@ -310,24 +309,28 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 // Tombol Tambah ke Keranjang Kasir
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.add_shopping_cart,
                     size: 18,
-                    color: Color(0xFF1E3A8A),
+                    color: item.stok == 0
+                        ? Colors.grey
+                        : const Color(0xFF3A1C71),
                   ),
                   tooltip: 'Tambah ke Kasir',
                   padding: const EdgeInsets.all(4),
                   constraints: const BoxConstraints(),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '${item.nama} dipilih untuk transaksi kasir',
-                        ),
-                        duration: const Duration(seconds: 1),
-                      ),
-                    );
-                  },
+                  onPressed: item.stok == 0
+                      ? null
+                      : () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${item.nama} dipilih untuk transaksi kasir',
+                              ),
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                        },
                 ),
               ],
             ),
@@ -344,18 +347,19 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: AppBar(
         title: const Row(
           children: [
-            Icon(Icons.point_of_sale, color: Color(0xFFFBBF24)),
+            Icon(Icons.point_of_sale, color: Colors.amber, size: 24),
             SizedBox(width: 8),
             Text(
               'SmartKasir',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontSize: 18,
                 color: Colors.white,
               ),
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline, color: Colors.white),
@@ -372,33 +376,40 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       body: Column(
         children: [
-          // 1. BANNER TOTAL TRANSAKSI HARIAN
+          // 1. BANNER TOTAL TRANSAKSI HARIAN (GRADIENT RUSSIAN VIOLET)
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.all(12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                colors: [Color(0xFF3A1C71), Color(0xFF642B73)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF3A1C71).withValues(alpha: 0.25),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Total Penjualan Hari Ini',
-                      style: TextStyle(color: Colors.white70, fontSize: 13),
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'Rp 845.000',
-                      style: TextStyle(
+                      _formatRupiah(845000),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -408,12 +419,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
+                    horizontal: 12,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(
                     children: [
@@ -436,7 +447,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
           // 2. KOTAK PENCARIAN CEPAT (SQL LIKE)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TextField(
               controller: _searchController,
               onChanged: (val) {
@@ -445,7 +456,7 @@ class _DashboardPageState extends State<DashboardPage> {
               },
               decoration: InputDecoration(
                 hintText: 'Cari nama produk kasir ...',
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF1E3A8A)),
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF3A1C71)),
                 suffixIcon: _keywordPencarian.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear, size: 18),
@@ -477,19 +488,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
           // 3. FILTER CHIP HORIZONTAL KATEGORI
           SizedBox(
-            height: 38,
+            height: 42,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               itemCount: _kategoriList.length,
               itemBuilder: (context, index) {
                 final isSelected = _kategoriTerpilih == index;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
+                  child: FilterChip(
                     label: Text(_kategoriList[index]),
                     selected: isSelected,
-                    selectedColor: const Color(0xFF1E3A8A),
+                    selectedColor: const Color(0xFF3A1C71), // Russian Violet
                     backgroundColor: Colors.white,
                     labelStyle: TextStyle(
                       color: isSelected ? Colors.white : Colors.black87,
@@ -513,7 +524,7 @@ class _DashboardPageState extends State<DashboardPage> {
               },
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // 4. DAFTAR KATALOG DENGAN FUTUREBUILDER (DATA PERSISTENSI SQLITE)
           Expanded(
@@ -522,9 +533,10 @@ class _DashboardPageState extends State<DashboardPage> {
               builder: (context, snapshot) {
                 // KONDISI 1: Sedang memuat data (Loading State)
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF3A1C71)),
+                  );
                 }
-
                 // KONDISI 2: Terjadi kesalahan (Error State)
                 if (snapshot.hasError) {
                   return Center(
@@ -567,11 +579,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 // KONDISI 4: Data Berhasil Dimuat (Success State)
                 return GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 80),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    mainAxisExtent:
-                        220, // Kunci tinggi kartu tetap (misal: 215 - 225 px)
+                    mainAxisExtent: 220, // Kunci tinggi kartu tetap
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),
@@ -593,7 +604,7 @@ class _DashboardPageState extends State<DashboardPage> {
           );
           if (refresh == true) _muatDataProduk();
         },
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Tambah Produk'),

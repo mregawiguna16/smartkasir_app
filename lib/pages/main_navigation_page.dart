@@ -9,6 +9,7 @@ import 'profil_toko_page.dart';
 // Widget berstatus untuk mengelola kerangka navigasi bawah (BottomNavigationBar)
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
+
   @override
   State<MainNavigationPage> createState() => _MainNavigationPageState();
 }
@@ -16,6 +17,7 @@ class MainNavigationPage extends StatefulWidget {
 class _MainNavigationPageState extends State<MainNavigationPage> {
   // Variabel penyimpan indeks tab menu yang sedang aktif dipilih pengguna (default: 0 = Beranda)
   int _currentIndex = 0;
+
   // Daftar 4 layar menu utama aplikasi SmartKasir yang terhubung ke bilah navigasi
   final List<Widget> _pages = [
     // Indeks 0: Tab Beranda (Katalog Produk & Operasi CRUD SQLite)
@@ -37,6 +39,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     // Indeks 3: Tab Toko (Layar Profil Toko SharedPreferences & Kelola Staf Karyawan M12)
     const ProfilTokoPage(),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,8 +71,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           // Memastikan seluruh 4 label dan ikon menu tetap statis dan terlihat jelas tanpa bergeser
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          // Warna tema utama Navy (#1E3A8A) saat tab dalam kondisi aktif dipilih
-          selectedItemColor: const Color(0xFF1E3A8A),
+          // Warna tema utama Russian Violet (#3A1C71) saat tab dalam kondisi aktif dipilih
+          selectedItemColor: const Color(0xFF3A1C71),
           // Warna abu-abu netral untuk tab yang sedang tidak aktif
           unselectedItemColor: Colors.grey.shade500,
           // Format tipografi label teks tab yang sedang aktif

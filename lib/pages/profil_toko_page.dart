@@ -8,22 +8,25 @@ import 'kelola_karyawan_page.dart';
 // Halaman Pengaturan Profil Toko & Footer Struk Kasir
 class ProfilTokoPage extends StatefulWidget {
   const ProfilTokoPage({super.key});
+
   @override
   State<ProfilTokoPage> createState() => _ProfilTokoPageState();
 }
 
 class _ProfilTokoPageState extends State<ProfilTokoPage> {
   // Controller formulir pengaturan identitas toko
-
   final _namaTokoController = TextEditingController();
   final _alamatController = TextEditingController();
   final _noWaController = TextEditingController();
-  final _instagramController = TextEditingController();
+  final _igController = TextEditingController();
   final _footerController = TextEditingController();
+
   // Status visual tombol simpan
   bool _sedangMenyimpan = false;
+
   // Nama kasir aktif yang sedang bertugas
   String _activeCashierName = 'Belum Ditentukan';
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +38,7 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
     _namaTokoController.dispose();
     _alamatController.dispose();
     _noWaController.dispose();
-    _instagramController.dispose();
+    _igController.dispose();
     _footerController.dispose();
     super.dispose();
   }
@@ -45,14 +48,15 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _namaTokoController.text =
-          prefs.getString('nama_toko') ?? 'Waroenk Kampoenk';
+          prefs.getString('nama_toko') ?? 'SmartKasir Poliban';
       _alamatController.text =
           prefs.getString('alamat_toko') ??
           'Jl. Brigjend H. Hasan Basry, Banjarmasin';
       _noWaController.text = prefs.getString('no_wa') ?? '081234567890';
-      _instagramController.text =
-          prefs.getString('instagram_toko') ?? '@WaroenkKampoenk';
-      _footerController.text = prefs.getString('footer_struk') ?? 'Terima Kasih Atas Kunjungan Anda! Barang yang sudah dibeli tidak dapat ditukar.';
+      _igController.text = prefs.getString('ig_toko') ?? '@smartkasir.poliban';
+      _footerController.text =
+          prefs.getString('footer_struk') ??
+          'Terima Kasih Atas Kunjungan Anda! Barang yang sudah dibeli tidak dapat ditukar.';
       _activeCashierName =
           prefs.getString('active_cashier_name') ?? 'Belum Ditentukan';
     });
@@ -61,13 +65,16 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
   // --- MENYIMPAN PENGATURAN TOKO KE SHAREDPREFERENCES ---
   Future<void> _simpanProfilToko() async {
     setState(() => _sedangMenyimpan = true);
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('nama_toko', _namaTokoController.text.trim());
     await prefs.setString('alamat_toko', _alamatController.text.trim());
     await prefs.setString('no_wa', _noWaController.text.trim());
-    await prefs.setString('instagram_toko', _instagramController.text.trim());
+    await prefs.setString('ig_toko', _igController.text.trim());
     await prefs.setString('footer_struk', _footerController.text.trim());
+
     setState(() => _sedangMenyimpan = false);
+
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -87,7 +94,7 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
           'Profil & Pengaturan Toko',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
@@ -114,7 +121,7 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
                 children: [
                   const CircleAvatar(
                     radius: 24,
-                    backgroundColor: Color(0xFF1E3A8A),
+                    backgroundColor: Color(0xFF3A1C71), // Russian Violet
                     child: Icon(
                       Icons.storefront,
                       color: Colors.white,
@@ -125,7 +132,6 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-
                       children: [
                         const Text(
                           'KASIR AKTIF SHIFT INI',
@@ -149,14 +155,16 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
                     onPressed: () async {
                       await Navigator.push(
                         context,
-
                         MaterialPageRoute(
                           builder: (context) => const KelolaKaryawanPage(),
                         ),
                       );
-
                       _muatProfilToko();
                     },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF3A1C71),
+                      side: const BorderSide(color: Color(0xFF3A1C71)),
+                    ),
                     icon: const Icon(Icons.people_outline, size: 16),
                     label: const Text('Kelola'),
                   ),
@@ -171,10 +179,11 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
-                color: Color(0xFF1E3A8A),
+                color: Color(0xFF3A1C71), // Russian Violet
               ),
             ),
             const SizedBox(height: 12),
+
             // 1. NAMA TOKO
             TextFormField(
               controller: _namaTokoController,
@@ -189,6 +198,7 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
               ),
             ),
             const SizedBox(height: 14),
+
             // 2. ALAMAT TOKO
             TextFormField(
               controller: _alamatController,
@@ -204,6 +214,7 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
               ),
             ),
             const SizedBox(height: 14),
+
             // 3. KONTAK WHATSAPP / TELEPON
             TextFormField(
               controller: _noWaController,
@@ -219,13 +230,14 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
               ),
             ),
             const SizedBox(height: 14),
-            // 4. Instagram
+
+            // 4. AKUN INSTAGRAM TOKO
             TextFormField(
-              controller: _instagramController,
-              keyboardType: TextInputType.text,
+              controller: _igController,
               decoration: InputDecoration(
-                labelText: 'Instagram Toko',
-                prefixIcon: const Icon(Icons.camera_alt_outlined),
+                labelText: 'Akun Instagram Toko',
+                hintText: '@nama_toko',
+                prefixIcon: const Icon(Icons.alternate_email),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -233,6 +245,7 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
                 fillColor: Colors.white,
               ),
             ),
+            const SizedBox(height: 14),
 
             // 5. CATATAN KAKI STRUK (FOOTER RECEIPT)
             TextFormField(
@@ -243,18 +256,19 @@ class _ProfilTokoPageState extends State<ProfilTokoPage> {
                 hintText: 'Contoh: Terima kasih atas kunjungan Anda!',
                 prefixIcon: const Icon(Icons.receipt_outlined),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 filled: true,
                 fillColor: Colors.white,
               ),
             ),
             const SizedBox(height: 24),
+
             // TOMBOL SIMPAN PENGATURAN
             ElevatedButton.icon(
               onPressed: _sedangMenyimpan ? null : _simpanProfilToko,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1E3A8A),
+                backgroundColor: const Color(0xFF3A1C71), // Russian Violet
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(

@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Mengimpor model Karyawan, DatabaseHelper, dan FormKaryawanPage
-import '../models/karyawan.dart';
 import '../helpers/database_helper.dart';
+import '../models/karyawan.dart';
 import 'form_karyawan_page.dart';
 
 // Halaman Manajemen Daftar Staf Kasir & Penetapan Kasir Aktif
 class KelolaKaryawanPage extends StatefulWidget {
   const KelolaKaryawanPage({super.key});
+
   @override
   State<KelolaKaryawanPage> createState() => _KelolaKaryawanPageState();
 }
@@ -17,9 +18,11 @@ class KelolaKaryawanPage extends StatefulWidget {
 class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
   // Variabel penampung Future daftar karyawan dari SQLite
   late Future<List<Karyawan>> _karyawanFuture;
+
   // ID kasir aktif yang tersimpan di SharedPreferences
   int? _activeCashierId;
   String _activeCashierName = 'Belum Ditentukan';
+
   @override
   void initState() {
     super.initState();
@@ -42,15 +45,17 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('active_cashier_id', staf.id!);
     await prefs.setString('active_cashier_name', staf.namaKaryawan);
+
     setState(() {
       _activeCashierId = staf.id;
       _activeCashierName = staf.namaKaryawan;
     });
+
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Kasir aktif giliran saat ini: "${staf.namaKaryawan}"'),
-        backgroundColor: Colors.blue.shade700,
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -63,15 +68,15 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Karyawan "${staf.namaKaryawan}" sedang aktif bertugas! Ganti kasir aktif terlebihdahulu sebelum menghapus.',
+            'Karyawan "${staf.namaKaryawan}" sedang aktif bertugas! Ganti kasir aktif terlebih dahulu sebelum menghapus.',
           ),
           backgroundColor: Colors.red.shade700,
-
           behavior: SnackBarBehavior.floating,
         ),
       );
       return;
     }
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -123,8 +128,8 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
       bg = Colors.amber.shade100;
       fg = Colors.amber.shade900;
     } else if (peran == 'Admin') {
-      bg = Colors.blue.shade100;
-      fg = Colors.blue.shade900;
+      bg = Colors.purple.shade100;
+      fg = Colors.purple.shade900;
     } else if (peran == 'Supervisor') {
       bg = Colors.purple.shade100;
       fg = Colors.purple.shade900;
@@ -132,6 +137,7 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
       bg = Colors.green.shade100;
       fg = Colors.green.shade900;
     }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
@@ -154,7 +160,7 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
           'Kelola Karyawan & Kasir',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
@@ -165,14 +171,14 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
+                colors: [Color(0xFF3A1C71), Color(0xFF642B73)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blue.withValues(alpha: 0.15),
+                  color: const Color(0xFF3A1C71).withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
@@ -203,10 +209,8 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
                         ),
                       ),
                       const SizedBox(height: 2),
-
                       Text(
                         _activeCashierName,
-
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
@@ -219,95 +223,93 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
               ],
             ),
           ),
+
           // 2. DAFTAR KARYAWAN DARI DATABASE SQLITE
           Expanded(
             child: FutureBuilder<List<Karyawan>>(
               future: _karyawanFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'Terjadi kesalahan database: ${snapshot.error}',
-                    ),
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF3A1C71)),
                   );
                 }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Terjadi kesalahan database: ${snapshot.error}'),
+                  );
+                }
+
                 final daftarStaf = snapshot.data ?? [];
                 if (daftarStaf.isEmpty) {
                   return const Center(
                     child: Text('Belum ada data karyawan terdaftar.'),
                   );
                 }
+
                 return ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
                   itemCount: daftarStaf.length,
                   itemBuilder: (context, index) {
                     final staf = daftarStaf[index];
                     final isActive = staf.id == _activeCashierId;
+
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-
                       decoration: BoxDecoration(
                         color: Colors.white,
-
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isActive
-                              ? const Color(0xFF2563EB)
+                              ? const Color(0xFF3A1C71)
                               : const Color(0xFFE2E8F0),
-
                           width: isActive ? 2 : 1,
                         ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.05),
-
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 6,
                         ),
-
                         leading: CircleAvatar(
                           backgroundColor: isActive
-                              ? const Color(0xFF1E3A8A)
+                              ? const Color(0xFF3A1C71)
                               : Colors.grey.shade200,
-                          foregroundColor: isActive
-                              ? Colors.white
-                              : Colors.grey.shade700,
+                          foregroundColor:
+                              isActive ? Colors.white : Colors.grey.shade700,
                           child: Text(
                             staf.namaKaryawan.isNotEmpty
                                 ? staf.namaKaryawan[0].toUpperCase()
                                 : '?',
-
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                         title: Row(
                           children: [
-                            Text(
-                              staf.namaKaryawan,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                            Flexible(
+                              child: Text(
+                                staf.namaKaryawan,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 8),
                             _buildRoleBadge(staf.peran),
                           ],
                         ),
-
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 4),
-
                           child: Text(
                             'PIN: •••• | ID: #${staf.id}',
                             style: TextStyle(
@@ -316,51 +318,41 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
                             ),
                           ),
                         ),
-
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
-
                           children: [
                             // Tombol Set Kasir Aktif
-
                             IconButton(
                               icon: Icon(
                                 isActive ? Icons.star : Icons.star_border,
-
                                 color: isActive
                                     ? Colors.amber.shade700
                                     : Colors.grey,
                               ),
-
                               tooltip: isActive
                                   ? 'Kasir Aktif'
                                   : 'Set sebagai Kasir Aktif',
                               onPressed: () => _setKasirAktif(staf),
                             ),
-
                             // Tombol Edit Staf
                             IconButton(
                               icon: const Icon(
                                 Icons.edit_outlined,
                                 size: 18,
-                                color: Color(0xFF1E3A8A),
+                                color: Color(0xFF3A1C71),
                               ),
-
                               tooltip: 'Edit Data',
                               onPressed: () async {
                                 final refresh = await Navigator.push(
                                   context,
-
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         FormKaryawanPage(karyawan: staf),
                                   ),
                                 );
-
                                 if (refresh == true) _muatData();
                               },
                             ),
-
                             // Tombol Hapus Staf
                             IconButton(
                               icon: const Icon(
@@ -368,7 +360,6 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
                                 size: 18,
                                 color: Colors.red,
                               ),
-
                               tooltip: 'Hapus Staf',
                               onPressed: () => _konfirmasiHapusKaryawan(staf),
                             ),
@@ -391,7 +382,7 @@ class _KelolaKaryawanPageState extends State<KelolaKaryawanPage> {
           );
           if (refresh == true) _muatData();
         },
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         foregroundColor: Colors.white,
         icon: const Icon(Icons.person_add),
         label: const Text('Tambah Karyawan'),

@@ -1,9 +1,7 @@
 // Mengimpor pustaka kontrol waktu dan timer asinkron bawaan bahasa Dart
 import 'dart:async';
-
 // Mengimpor pustaka antarmuka Material Design utama Flutter
 import 'package:flutter/material.dart';
-
 // Mengimpor halaman navigasi utama (MainNavigationPage) sebagai tujuan perpindahan layar
 import 'main_navigation_page.dart';
 
@@ -19,7 +17,7 @@ class SplashScreenPage extends StatefulWidget {
 class _SplashScreenPageState extends State<SplashScreenPage> {
   // --- DEKLARASI VARIABEL STATE & TIMER ---
   // Deklarasi variabel durasi hitung mundur dalam satuan detik (Nilai awal: 5 detik)
-  int _durasiDetik = 10;
+  int _durasiDetik = 5;
 
   // Deklarasi variabel objek timer asinkron (Nullable '?' karena belum dibuat saat kelas diinisialisasi)
   Timer? _timer;
@@ -43,9 +41,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
         setState(() {
           _durasiDetik--; // Operasi decrement (mengurangi nilai variabel _durasiDetik sebanyak 1)
         });
-      }
-      // Percabangan Kondisi 2: Jika waktu durasi telah habis (mencapai angka 1 / selesai)
-      else {
+      } else {
+        // Percabangan Kondisi 2: Jika waktu durasi telah habis (mencapai angka 1 / selesai)
         _timer?.cancel(); // Menghentikan perulangan objek timer agar tidak berjalan lagi
 
         // KONTROL PERCABANGAN KEAMANAN WIDGET TREE (SAFETY CHECK):
@@ -77,7 +74,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     // Komponen/Widget Scaffold: Layar penuh dengan latar belakang warna biru navy seragam kasir
     return Scaffold(
       backgroundColor: const Color(
-        0xFF1E3A8A,
+        0xFF3A1C71,
       ), // Deklarasi warna latar belakang: Biru Navy Elegan
       // Komponen/Widget Center: Memposisikan seluruh komponen tepat di tengah layar secara vertikal & horizontal
       body: Center(
@@ -110,11 +107,12 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 Icons.point_of_sale_rounded,
                 size: 72,
                 color: Color(
-                  0xFF1E3A8A,
+                  0xFF3A1C71,
                 ), // Warna ikon serasi dengan warna tema (Biru Navy)
               ),
             ),
             const SizedBox(height: 24), // Jarak pemisah vertikal 24 piksel
+
             // =====================================================================
             // BAGIAN 2: IDENTITAS & TAGLINE PRODUK DIGITAL
             // =====================================================================
@@ -135,6 +133,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
               style: TextStyle(fontSize: 13, color: Colors.white70),
             ),
             const SizedBox(height: 36), // Jarak spasi 36 piksel
+
             // =====================================================================
             // BAGIAN 3: INDIKATOR LOADING ANIMATIF & TEKS TIMER DINAMIS
             // =====================================================================
@@ -151,14 +150,14 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
             const SizedBox(height: 14), // Jarak spasi 14 piksel
             // Komponen/Widget Text: Menampilkan status hitung mundur secara reaktif dari variabel _durasiDetik
             Text(
-              'Menyiapkan sistem SmartKasir ($_durasiDetik detik)...', // Interpolasi string variabel _durasiDetik
+              'Menyiapkan sistem Smartkasir ($_durasiDetik detik)...', // Interpolasi string variabel _durasiDetik
               style: const TextStyle(fontSize: 12, color: Colors.white70),
             ),
             const SizedBox(height: 40), // Jarak pemisah ke footer
             // Komponen/Widget Text: Catatan modul versi praktikum
             Text(
-              'Versi 1.0.0 — Modul Pertemuan 10',
-              style: TextStyle(fontSize: 11, color: Colors.blue.shade200),
+              'Versi 1.0.0 — Modul Pertemuan 13',
+              style: TextStyle(fontSize: 11, color: Colors.purple.shade200),
             ),
           ],
         ),

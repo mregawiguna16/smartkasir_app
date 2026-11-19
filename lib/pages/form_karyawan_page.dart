@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Mengimpor model data Karyawan dan DatabaseHelper
-import '../models/karyawan.dart';
 import '../helpers/database_helper.dart';
+import '../models/karyawan.dart';
 
 // Halaman Formulir Dwifungsi Karyawan (Tambah Baru & Edit Data Lama)
 class FormKaryawanPage extends StatefulWidget {
   // Objek nullable: null = mode Tambah, terisi = mode Edit
   final Karyawan? karyawan;
+
   const FormKaryawanPage({super.key, this.karyawan});
+
   @override
   State<FormKaryawanPage> createState() => _FormKaryawanPageState();
 }
@@ -18,16 +20,21 @@ class FormKaryawanPage extends StatefulWidget {
 class _FormKaryawanPageState extends State<FormKaryawanPage> {
   // GlobalKey pengontrol validasi formulir
   final _formKey = GlobalKey<FormState>();
+
   // Controller kolom input teks
   final _namaController = TextEditingController();
   final _pinController = TextEditingController();
+
   // Nilai terpilih dropdown peran
   String _peranTerpilih = 'Kasir';
-  final List<String> _daftarPeran = ['Kasir', 'Admin', 'Manajer', 'Supervisor'];
+  final List<String> _daftarPeran = ['Kasir', 'Admin', 'Manajer'];
+
   // Status visual tombol proses simpan
   bool _sedangMenyimpan = false;
+
   // Getter pengecekan mode halaman
   bool get _isEditMode => widget.karyawan != null;
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +57,9 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
   Future<void> _simpanKaryawan() async {
     // 1. Eksekusi validasi seluruh kolom form
     if (!_formKey.currentState!.validate()) return;
+
     setState(() => _sedangMenyimpan = true);
+
     try {
       // 2. Membungkus input ke dalam objek model Karyawan
       final dataKaryawan = Karyawan(
@@ -59,13 +68,16 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
         pin: _pinController.text.trim(),
         peran: _peranTerpilih,
       );
+
       // 3. Eksekusi Kueri SQLite sesuai mode
       if (_isEditMode) {
         await DatabaseHelper.instance.updateKaryawan(dataKaryawan);
       } else {
         await DatabaseHelper.instance.insertKaryawan(dataKaryawan);
       }
+
       if (!mounted) return;
+
       // 4. Menampilkan notifikasi sukses
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -78,6 +90,7 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+
       // 5. Kembali ke halaman sebelumnya dengan sinyal true (refresh)
       Navigator.pop(context, true);
     } catch (e) {
@@ -106,7 +119,7 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
@@ -120,23 +133,23 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: const Color(0xFFF3E8FF),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(color: const Color(0xFFD8B4FE)),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.badge_outlined,
-                      color: Colors.blue.shade800,
+                      color: Color(0xFF3A1C71),
                       size: 28,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Setiap staf kasir memiliki PIN 6 digit untuk login shift penjualan.',
                         style: TextStyle(
-                          color: Colors.blue.shade900,
+                          color: Color(0xFF3A1C71),
                           fontSize: 12,
                         ),
                       ),
@@ -145,6 +158,7 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
                 ),
               ),
               const SizedBox(height: 20),
+
               // 1. INPUT NAMA LENGKAP KARYAWAN
               TextFormField(
                 controller: _namaController,
@@ -159,15 +173,18 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
                   fillColor: Colors.white,
                 ),
                 validator: (val) {
-                  if (val == null || val.trim().isEmpty)
+                  if (val == null || val.trim().isEmpty) {
                     return 'Nama karyawan wajib diisi!';
-                  if (val.trim().length < 3)
+                  }
+                  if (val.trim().length < 3) {
                     return 'Nama karyawan minimal 3 karakter!';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-              // 2. INPUT PIN KEAMANAN 4 DIGIT
+
+              // 2. INPUT PIN KEAMANAN 6 DIGIT
               TextFormField(
                 controller: _pinController,
                 keyboardType: TextInputType.number,
@@ -178,7 +195,7 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
                 ],
                 decoration: InputDecoration(
                   labelText: 'PIN Kasir (6 Digit Angka)',
-                  hintText: 'Contoh: 123456',
+                  hintText: 'Contoh: 1234',
                   prefixIcon: const Icon(Icons.lock_outline),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -187,17 +204,20 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
                   fillColor: Colors.white,
                 ),
                 validator: (val) {
-                  if (val == null || val.trim().isEmpty)
+                  if (val == null || val.trim().isEmpty) {
                     return 'PIN kasir wajib diisi!';
-                  if (val.trim().length != 6)
+                  }
+                  if (val.trim().length != 6) {
                     return 'PIN kasir harus tepat 6 digit angka!';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
+
               // 3. DROPDOWN PERAN / JABATAN
               DropdownButtonFormField<String>(
-                initialValue: _peranTerpilih,
+                value: _peranTerpilih,
                 decoration: InputDecoration(
                   labelText: 'Peran / Jabatan Toko',
                   prefixIcon: const Icon(Icons.work_outline),
@@ -218,11 +238,12 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
                 },
               ),
               const SizedBox(height: 28),
+
               // 4. TOMBOL SIMPAN DATA KARYAWAN
               ElevatedButton.icon(
                 onPressed: _sedangMenyimpan ? null : _simpanKaryawan,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3A8A),
+                  backgroundColor: const Color(0xFF3A1C71), // Russian Violet
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -247,9 +268,8 @@ class _FormKaryawanPageState extends State<FormKaryawanPage> {
                   _sedangMenyimpan
                       ? 'Menyimpan Data...'
                       : (_isEditMode
-                            ? 'Perbarui Data Karyawan'
-                            : 'Simpan Karyawan Baru'),
-
+                          ? 'Perbarui Data Karyawan'
+                          : 'Simpan Karyawan Baru'),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,

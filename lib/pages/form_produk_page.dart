@@ -1,12 +1,12 @@
-// Mengimpor pustaka antarmuka Material Design utama Flutter
+// Mengimpor antarmuka Material Design utama Flutter
 import 'package:flutter/material.dart';
 // Mengimpor pustaka pemformat angka dan mata uang
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 // Mengimpor model data dan database helper
-import '../models/produk.dart';
 import '../helpers/database_helper.dart';
+import '../models/produk.dart';
 
 // Halaman formulir kasir dwifungsi: Tambah Produk Baru ATAU Edit Produk
 class FormProdukPage extends StatefulWidget {
@@ -44,7 +44,7 @@ class _FormProdukPageState extends State<FormProdukPage> {
   // Status proses simpan
   bool _sedangMenyimpan = false;
 
-  // Format rupiah tampilan
+  // Format rupiah tampilan (Digunakan untuk helperText secara reaktif)
   final _currencyFormat = NumberFormat.currency(
     locale: 'id_ID',
     symbol: 'Rp ',
@@ -63,9 +63,8 @@ class _FormProdukPageState extends State<FormProdukPage> {
       final p = widget.produk!;
       _kodeController.text = p.kodeProduk;
       _namaController.text = p.nama;
-      _kategoriTerpilih = _kategoriList.contains(p.kategori)
-          ? p.kategori
-          : 'Makanan';
+      _kategoriTerpilih =
+          _kategoriList.contains(p.kategori) ? p.kategori : 'Makanan';
       _hargaBeliController.text = p.hargaBeli.toInt().toString();
       _hargaJualController.text = p.hargaJual.toInt().toString();
       _stokController.text = p.stok.toString();
@@ -113,7 +112,9 @@ class _FormProdukPageState extends State<FormProdukPage> {
         hargaBeli: beli,
         hargaJual: jual,
         stok: stok,
-        gambarUrl: _isEditMode ? widget.produk!.gambarUrl : 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500',
+        gambarUrl: _isEditMode
+            ? widget.produk!.gambarUrl
+            : 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500',
         diskonPersen: diskon,
       );
 
@@ -136,7 +137,7 @@ class _FormProdukPageState extends State<FormProdukPage> {
                 ? 'Data produk "${produkData.nama}" berhasil diperbarui!'
                 : 'Produk "${produkData.nama}" berhasil disimpan ke SQLite!',
           ),
-          backgroundColor: const Color(0xFF1E3A8A),
+          backgroundColor: const Color(0xFF3A1C71), // Russian Violet
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -162,7 +163,7 @@ class _FormProdukPageState extends State<FormProdukPage> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(_isEditMode ? 'Edit Data Produk' : 'Tambah Produk Baru'),
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF3A1C71), // Russian Violet
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -177,15 +178,15 @@ class _FormProdukPageState extends State<FormProdukPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFF6FF),
+                  color: const Color(0xFFF3E8FF),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFBFDBFE)),
+                  border: Border.all(color: const Color(0xFFD8B4FE)),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       _isEditMode ? Icons.edit_note : Icons.playlist_add_check,
-                      color: const Color(0xFF1E3A8A),
+                      color: const Color(0xFF3A1C71),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -195,7 +196,7 @@ class _FormProdukPageState extends State<FormProdukPage> {
                             : 'Pastikan harga jual kasir lebih besar dari harga beli modal toko.',
                         style: const TextStyle(
                           fontSize: 13,
-                          color: Color(0xFF1E3A8A),
+                          color: Color(0xFF3A1C71),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -263,7 +264,7 @@ class _FormProdukPageState extends State<FormProdukPage> {
               ),
               const SizedBox(height: 16),
 
-              // 4. BARIS INPUT HARGA BELI & HARGA JUAL (2 KOLOM)
+              // 4. BARIS INPUT HARGA BELI & HARGA JUAL (2 KOLOM MEMAKAI FORMAT RUPIAH)
               Row(
                 children: [
                   Expanded(
@@ -271,8 +272,17 @@ class _FormProdukPageState extends State<FormProdukPage> {
                       controller: _hargaBeliController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (val) => setState(() {}),
                       decoration: InputDecoration(
                         labelText: 'Harga Modal (Rp)',
+                        helperText:
+                            _hargaBeliController.text.isNotEmpty &&
+                                double.tryParse(_hargaBeliController.text) !=
+                                    null
+                            ? _currencyFormat.format(
+                                double.parse(_hargaBeliController.text),
+                              )
+                            : 'Contoh: Rp 10.000',
                         prefixIcon: const Icon(Icons.monetization_on_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -283,8 +293,9 @@ class _FormProdukPageState extends State<FormProdukPage> {
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Wajib diisi';
                         if (double.tryParse(val) == null ||
-                            double.parse(val) <= 0)
+                            double.parse(val) <= 0) {
                           return 'Harus > 0';
+                        }
                         return null;
                       },
                     ),
@@ -295,8 +306,17 @@ class _FormProdukPageState extends State<FormProdukPage> {
                       controller: _hargaJualController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (val) => setState(() {}),
                       decoration: InputDecoration(
                         labelText: 'Harga Jual (Rp)',
+                        helperText:
+                            _hargaJualController.text.isNotEmpty &&
+                                double.tryParse(_hargaJualController.text) !=
+                                    null
+                            ? _currencyFormat.format(
+                                double.parse(_hargaJualController.text),
+                              )
+                            : 'Contoh: Rp 18.000',
                         prefixIcon: const Icon(Icons.price_check),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -358,7 +378,7 @@ class _FormProdukPageState extends State<FormProdukPage> {
                       ),
                       validator: (val) {
                         final d = int.tryParse(val ?? '0') ?? 0;
-                        if (d < 0 || d > 50) return 'Diskon Maksimal 50%';
+                        if (d < 0 || d > 50) return 'Diskon maksinal 50%';
                         return null;
                       },
                     ),
@@ -374,7 +394,7 @@ class _FormProdukPageState extends State<FormProdukPage> {
                 child: ElevatedButton.icon(
                   onPressed: _sedangMenyimpan ? null : _simpanKeDatabase,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E3A8A),
+                    backgroundColor: const Color(0xFF3A1C71), // Russian Violet
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

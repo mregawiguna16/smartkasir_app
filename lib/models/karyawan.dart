@@ -3,12 +3,16 @@ class Karyawan {
   // 1. ATRIBUT ENTITAS KARYAWAN
   // ID unik karyawan (auto increment di SQLite, bernilai null saat staf baru belum disimpan)
   final int? id;
+
   // Nama lengkap atau nama panggilan staf kasir
   final String namaKaryawan;
+
   // PIN pengaman 4 digit angka untuk otentikasi giliran shift kasir
   final String pin;
+
   // Peran tanggung jawab kerja: 'Kasir', 'Admin', atau 'Manajer'
   final String peran;
+
   // 2. KONSTRUKTOR MODEL KARYAWAN
   const Karyawan({
     this.id,
@@ -16,6 +20,7 @@ class Karyawan {
     required this.pin,
     required this.peran,
   });
+
   // 3. METODE SERIALISASI (Dart Object -> Map<String, dynamic>)
   // Digunakan saat menyimpan data ke baris tabel SQLite
   Map<String, dynamic> toMap() {

@@ -1,21 +1,10 @@
-// Mengimpor pustaka dasar Flutter dan konfigurasi Web SQLite FFI
-import 'package:flutter/foundation.dart';
+// Mengimpor pustaka antarmuka Material Design utama dari framework Flutter
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-
 // [PERUBAHAN TAHAP 7.5]: Tambahkan impor halaman Splash Screen
 import 'pages/splash_screen_page.dart';
 
 // Fungsi utama (entry point) aplikasi
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Inisialisasi wajib untuk platform Web agar SQLite berjalan normal di Chrome
-  if (kIsWeb) {
-    databaseFactory = databaseFactoryFfiWeb;
-  }
-
+void main() {
   runApp(const SmartKasirApp());
 }
 
@@ -31,13 +20,13 @@ class SmartKasirApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1E3A8A), // Biru Navy Profesional Bisnis
+          seedColor: const Color(0xFF3A1C71), // Ungu / Russian Violet Profesional Bisnis
           brightness: Brightness.light,
         ),
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           elevation: 2,
-          backgroundColor: Color(0xFF1E3A8A),
+          backgroundColor: Color(0xFF3A1C71),
           foregroundColor: Colors.white,
         ),
       ),
