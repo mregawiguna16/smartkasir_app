@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 // Mengimpor format mata uang
 import 'package:intl/intl.dart';
 
-// Mengimpor model data, database helper, dan formulir produk
+// Mengimpor model data, database helper, dan halaman formulir/kelola
 import '../helpers/database_helper.dart';
 import '../models/produk.dart';
 import 'form_produk_page.dart';
+import 'kelola_pelanggan_page.dart';
 
 // Halaman Beranda & Katalog Kasir SmartKasir
 class DashboardPage extends StatefulWidget {
@@ -379,7 +380,7 @@ class _DashboardPageState extends State<DashboardPage> {
           // 1. BANNER TOTAL TRANSAKSI HARIAN (GRADIENT RUSSIAN VIOLET)
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(12),
+            margin: const EdgeInsets.fromLTRB(12, 12, 12, 10),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -444,6 +445,105 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
+
+          // BARIS AKSI PINTAS CEPAT (QUICK ACTIONS): KELOLA PELANGGAN & TAMBAH PRODUK
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const KelolaPelangganPage(),
+                        ),
+                      );
+                      if (!mounted) return;
+                      _muatDataProduk();
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFCBD5E1)),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.people_alt_outlined,
+                            size: 18,
+                            color: Color(0xFF3A1C71),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Kelola Pelanggan',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF3A1C71),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: InkWell(
+                    onTap: () async {
+                      final refresh = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FormProdukPage(),
+                        ),
+                      );
+                      if (refresh == true) _muatDataProduk();
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3A1C71),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_box_outlined,
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Tambah Produk',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
 
           // 2. KOTAK PENCARIAN CEPAT (SQL LIKE)
           Padding(
